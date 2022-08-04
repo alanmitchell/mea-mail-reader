@@ -45,7 +45,8 @@ def process_msg(msg, data_path):
         # Find all the attachments that are Excel files and process
         for part in msg.walk():
             fname = part.get_filename()
-            if (fname is not None) and ('.xlsx' in fname):
+            if (fname is not None):
+                # this is an attachement.  assume that it is an Excel file of data
                 try:
                     attachment = part.get_payload(decode=True)
                     df = pd.read_excel(BytesIO(attachment)).dropna(how='all')
@@ -77,7 +78,7 @@ def process_msg(msg, data_path):
 
                     # Write to a CSV file. Include a timestamp in the file name so file
                     # are unique.
-                    fn = f'{Path(fname).stem}_{time.time():.3f}.csv'
+                    fn = f'{time.time():.3f}.csv'
                     out_path = data_path / fn
                     df_final[['id', 'ts', 'val']].to_csv(out_path, index=False)  # Pandas takes Path's directly
 
