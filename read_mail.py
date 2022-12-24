@@ -56,14 +56,15 @@ def process_msg(msg, data_path):
                     df_final = pd.DataFrame()
                     for _, row in df.iterrows():
                         row_data = row.dropna().values
-                        if len(row_data) == 98:
-                            vals = row_data[2:].astype(float) * 4.0  # x 4 to convert from 15 min kWh to average kW
+                        data_col_ct = len(row_data) - 2     # number of columns containing data
+                        interval_secs = int(24 * 3600 / data_col_ct)   # number of seconds in each interval
+                        if data_col_ct in (24, 96):
+                            vals = row_data[2:].astype(float) * data_col_ct / 24  # to convert to average kW
                             sensor_id = f'mea_{row_data[0]}'
 
-                            # Make timestamps, 15 minutes apart, starting at 7.5 minutes past
-                            # Midnight.
+                            # Make timestamps, starting 1/2 interval past midnight and properly spaced
                             day_start = row_data[1].tz_localize('US/Alaska', ambiguous='NaT').value // 10 ** 9
-                            seconds = np.array(list(range(15 * 60 // 2, 3600 * 24, 900)))
+                            seconds = np.array(list(range(interval_secs // 2, 3600 * 24, interval_secs)))
                             ts = day_start + seconds
 
                             # Put into DataFrame for easy filtering
