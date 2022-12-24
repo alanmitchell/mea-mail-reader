@@ -46,6 +46,7 @@ def process_msg(msg, data_path):
         for part in msg.walk():
             fname = part.get_filename()
             if (fname is not None):
+                print(fname)
                 # this is an attachement.  assume that it is an Excel file of data
                 try:
                     attachment = part.get_payload(decode=True)
@@ -76,6 +77,7 @@ def process_msg(msg, data_path):
                     find_good = lambda x: (x > 0) & (x < x.quantile(.95) * 2.5)
                     good_data = df_final.groupby('id')['val'].transform(find_good).astype(bool)
                     df_final = df_final[good_data]
+                    print(len(df_final))
 
                     # Write to a CSV file. Include a timestamp in the file name so file
                     # are unique.
@@ -109,6 +111,7 @@ if __name__ == '__main__':
         for num in messages[0].split():
 
             typ, data = mail.fetch(num,'(RFC822)')
+            print('processing a message')
             for response_part in data:
 
                 if isinstance(response_part, tuple):
