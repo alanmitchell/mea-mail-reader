@@ -69,7 +69,7 @@ def process_msg(msg, data_path):
                             ts = day_start + seconds
 
                             # Put into DataFrame for easy filtering
-                            dfr = pd.DataFrame({'ts': ts, 'val': vals, 'id': [sensor_id] * 96})
+                            dfr = pd.DataFrame({'ts': ts, 'val': vals, 'id': [sensor_id] * data_col_ct})
                             df_final = pd.concat([df_final, dfr])
 
                     # Remove outliers from data.  No zero values, and no very large values,
